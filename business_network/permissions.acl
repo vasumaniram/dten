@@ -1,0 +1,60 @@
+/**
+ * Access Control List for the tender network.
+ */
+rule Auditor {
+    description: "Allow the auditor full access"
+    participant: "org.dten.model.Auditor"
+    operation: READ
+    resource: "org.dten.model.*"
+    action: ALLOW
+}
+
+rule Member {
+    description: "Allow the member read access"
+    participant: "org.dten.model.Member"
+    operation: READ
+    resource: "org.dten.model.*"
+    action: ALLOW
+}
+
+rule TenderOrganizer {
+    description: "Allow the organizer of the tender total access"
+    participant(o): "org.dten.model.Organizer"
+    operation: ALL
+    resource(t): "org.dten.model.Tender"
+    condition: (t.organizer.getIdentifier() == o.getIdentifier())
+    action: ALLOW
+}
+
+rule TenderListingOwner {
+    description: "Allow the organizer of the tender total access to their tender listing"
+    participant(o): "org.dten.model.Organizer"
+    operation: ALL
+    resource(t): "org.dten.model.TenderListing"
+    condition: (t.tender.organizer.getIdentifier() == o.getIdentifier())
+    action: ALLOW
+}
+
+rule SystemACL {
+  description:  "System ACL to permit all access"
+  participant: "org.hyperledger.composer.system.Participant"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.**"
+  action: ALLOW
+}
+
+rule NetworkAdminUser {
+    description: "Grant business network administrators full access to user resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
+
+rule NetworkAdminSystem {
+    description: "Grant business network administrators full access to system resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}
